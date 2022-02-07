@@ -3,13 +3,7 @@ import { getAuth } from "firebase/auth";
 import { FieldValue, getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBQdSClUOPCMIL5nCf8ShG-mNTZCU3IUnA",
-    authDomain: "docu-blog-frb.firebaseapp.com",
-    projectId: "docu-blog-frb",
-    storageBucket: "docu-blog-frb.appspot.com",
-    messagingSenderId: "895747541706",
-    appId: "1:895747541706:web:0143dd51d20b6e194c8233",
-    measurementId: "G-8MCGBKRYJ3"
+//firebase Proyect configuration
   };
 
   // Initialize Firebase / Auth / Firestore
