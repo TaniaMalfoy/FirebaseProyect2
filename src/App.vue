@@ -28,11 +28,12 @@ export default {
     this.$store.commit("updateUser", user);
      console.log("onAuthState", user.email);
       if(user){
-        this.$store.dispatch("getCurrentUser");
+         this.$store.dispatch("getCurrentUser", user);
         console.log("CurrentUser onAuthStateChanged:", this.$store.profileEmail);
       }
     });
       this.checkRoute();
+      this.$store.dispatch("getPost");
   },
 
   mounted() {},
