@@ -1,58 +1,23 @@
 {
-  "name": "fireblogs-youtube",
-  "version": "0.1.0",
-  "private": true,
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
   },
+  "engines": {
+    "node": "16"
+  },
+  "main": "index.js",
   "dependencies": {
-    "core-js": "^3.21.0",
-    "dns": "^0.2.2",
-    "firebase": "^9.6.5",
-    "firebase-admin": "^10.0.2",
-    "http2": "^3.3.7",
-    "quill": "^1.3.7",
-    "quill-image-resize-module": "^3.0.0",
-    "vue": "^2.6.11",
-    "vue-router": "^3.5.3",
-    "vue-types": "^4.1.1",
-    "vue2-editor": "^2.10.3",
-    "vuex": "^3.6.2",
-    "vuex-map-model": "^1.2.1"
+    "firebase-admin": "^9.8.0",
+    "firebase-functions": "^3.14.1"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^6.2.2",
-    "vue-svg-inline-loader": "^2.1.2",
-    "vue-svg-loader": "^0.16.0",
-    "vue-template-compiler": "^2.6.14"
+    "firebase-functions-test": "^0.2.0"
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "rules": {
-      "vue/no-unused-components": "off",
-      "no-unused-vars": "off"
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+  "private": true
 }
