@@ -44,14 +44,7 @@ import password from "../assets/Icons/lock-alt-solid.svg";
 import user from "../assets/Icons/user-alt-light.svg";
 import { createUserWithEmailAndPassword, getCurrentUser } from "firebase/auth";
 import { auth, db } from "../firebase/firebaseInit";
-import {
-  addDoc,
-  collection,
-  setDoc,
-  getDoc,
-  doc,
-  documentId,
-} from "@firebase/firestore";
+import { setDoc, doc, documentId } from "@firebase/firestore";
 
 export default {
   name: "Register",

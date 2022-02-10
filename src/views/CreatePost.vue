@@ -1,6 +1,7 @@
 <template>
   <div class="create-post">
     <BlogCoverPreview v-show="this.$store.state.blogPhotoPreview" />
+    <Loading v-show="loading"/>
     <div class="container">
       <div :class="{ invisible: !error }" class="err-message">
         <p class="invp"><span class="invsp">Error:</span>{{ this.errorMsg }}</p>
@@ -43,8 +44,10 @@
         />
       </div>
       <div class="blog-actions">
-        <button class="blog-ab">Publish Blog</button>
-        <router-link class="router-button" to="#">Post Preview</router-link>
+        <button @click="uploadBlog" class="blog-ab">Publish Blog</button>
+        <router-link class="router-button" :to="{ name: 'BlogPreview' }"
+          >Post Preview</router-link
+        >
       </div>
     </div>
   </div>
@@ -60,9 +63,18 @@ const ImageResize = require("quill-image-resize-module").default;
 Quill.register("module/imageResize", ImageResize);
 
 import BlogCoverPreview from "../components/BlogCoverPreview.vue";
+import Loading from "../components/Loading.vue";
 
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase/firebaseInit";
+import {
+  setDoc,
+  doc,
+  collection,
+  addDoc,
+} from "@firebase/firestore";
+import { db, auth } from "../firebase/firebaseInit";
+
 
 export default {
   name: "CreatePost",
@@ -72,7 +84,8 @@ export default {
 
       error: null,
       errorMsg: null,
-      editorSeetings: {
+      loading: null,
+      editorSettings: {
         modules: {
           imageResize: {},
         },
@@ -81,6 +94,7 @@ export default {
   },
   components: {
     BlogCoverPreview,
+    Loading,
   },
   methods: {
     fileChange() {
@@ -94,25 +108,83 @@ export default {
       this.$store.commit("openPhotoPreview");
       console.log("openPhotoPreview");
     },
-    imageHandler(file, Editor, cursorLocation, resetUploader) {
-        console.log("Upload image");
-      //const storage = getStorage();
-      const storageRef = ref(storage, "documents/blogPostPhotos/"+ file.name);
+    async imageHandler(file, Editor, cursorLocation, resetUploader) {
+     
+     const imgRefName = "documents/blogPostPhotos/" + file.name;
+      console.log("imgRefName",imgRefName);
 
-      // 'file' comes from the Blob or File API
-      uploadBytes(storageRef, file, "state_changed").then((snapshot) => {
-        console.log("Uploaded a blob or file!");
-      }, (err) => {
+      const storageRef = ref(storage, imgRefName);
+      console.log("storageRef", storageRef);
+
+      uploadBytes(storageRef, "state_changed", file);
+     // .then(
+       // (snapshot) => {
+       //   console.log("Uploaded a blob or file!");
+       const storageRef2 = ref(storage, imgRefName);
+       console.log("storageref2", storageRef2);
+
+          const downloadURL = await getDownloadURL(ref(storage, storageRef2));
+          console.log("downloadURL", downloadURL);
+
+            Editor.insertEmbed(cursorLocation, "image", downloadURL);
+            console.log("Show image");
+            resetUploader();
+        //  });
+      //  },
+        (err) => {
           console.log(err);
-      },
-      async () => {
-         // const downloadURL = await getDownloadURL(ref(storage, 'images/stars.jpg'))
-         const downloadURL = await getDownloadURL();
-         Editor.insertEmbed(cursorLocation, "image", downloadURL);
-         resetUploader();
         }
-      );
-    },
+      //);
+    }, //image
+
+    async uploadBlog() {
+      if (this.blogTitle.length !== 0 && this.blogHTML.length !== 0) {
+        if (this.file) {
+        this.loading = true;
+          const photoName = this.$store.state.blogPhotoName;
+          var userIdFb = auth.currentUser.uid;
+
+          const storageRef = ref(
+            storage,
+            "documents/blogCoverPhotos/" + photoName
+          );
+          const downloadURL = getDownloadURL(storageRef);
+          console.log("downloadURL", downloadURL);
+
+          uploadBytes(storageRef, this.file);
+
+          const docRef = await addDoc(collection(db, "Post"), {});
+
+          await setDoc(doc(db, docRef.path), {
+            blogID: docRef.id,
+            blogHTML: this.blogHTML,
+            blogCoverPhoto: photoName,
+            blogCoverPhotoName: this.blogCoverPhotoName,
+            blogTitle: this.blogTitle,
+            profileId: userIdFb,
+            date: Date.now(),
+          });
+          this.loading = false;
+          console.log("Doc", docRef);
+          this.$router.push({ name: "ViewBlog" });
+
+          return;
+        } //if file
+
+        this.error = true;
+        this.errorMsg = "Where is the cover photo!?";
+        setTimeout(() => {
+          this.error = false;
+        }, 5000);
+        return;
+      } // if title
+      this.error = true;
+      this.errorMsg = "There is no post without a title and a post, fill it!";
+      setTimeout(() => {
+        this.error = false;
+      }, 5000);
+      return;
+    }, // fin de la funcion
   },
 
   computed: {
@@ -120,7 +192,7 @@ export default {
       return this.$store.state.profileId;
     },
     blogCoverPhotoName() {
-      return this.$store.state.blogCoverPhotoName;
+      return this.$store.state.blogPhotoName;
     },
     blogTitle: {
       get() {

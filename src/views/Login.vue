@@ -160,8 +160,8 @@ input:focus{
 .icon{
     width: 20px;
     position: absolute;
-    left: 6px;
-
+    left: 3px;
+    background-color: rgb(248 250 250);
 }
 
 .forgot-password{
