@@ -41,6 +41,7 @@ export default {
     width: 300px;
     padding: 40px 30px;
     background-color: #fff;
+    margin: 631px 0 0 -853px; /*Para centrar el modal en la pantalla */
 }
 
 p{
